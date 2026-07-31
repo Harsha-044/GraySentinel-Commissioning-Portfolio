@@ -1,1 +1,180 @@
+###############################################################################
+# GraySentinel - Kali Linux Evasion Detection Rules
+#
+# Author : Harsha
+# Purpose: Detect suspicious activities generated from Kali Linux lab machine
+# Version: 1.0
+#
+# Environment:
+# Kali Linux - Attacker / Security Testing Machine
+# Suricata IDS v8.0.5
+#
+###############################################################################
 
+
+###############################################################################
+# 1. Nmap SYN Scan Detection
+#
+# Detect TCP SYN scanning activity from Kali
+###############################################################################
+
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (
+    msg:"GRAYSENTINEL Kali Nmap SYN Scan Detected";
+    flags:S;
+    flow:stateless;
+    threshold:type both, track by_src, count 20, seconds 10;
+    classtype:network-scan;
+    sid:200001;
+    rev:1;
+)
+
+
+###############################################################################
+# 2. Nmap Host Discovery (ICMP Echo)
+#
+# Detect ICMP discovery scans
+###############################################################################
+
+alert icmp $EXTERNAL_NET any -> $HOME_NET any (
+    msg:"GRAYSENTINEL Kali ICMP Host Discovery Scan";
+    itype:8;
+    threshold:type threshold, track by_src, count 10, seconds 20;
+    classtype:network-scan;
+    sid:200002;
+    rev:1;
+)
+
+
+###############################################################################
+# 3. SMB Enumeration Detection
+#
+# Detect Kali SMB enumeration attempts
+###############################################################################
+
+alert tcp $EXTERNAL_NET any -> $HOME_NET 445 (
+    msg:"GRAYSENTINEL Kali SMB Enumeration Attempt";
+    flags:S;
+    flow:stateless;
+    threshold:type threshold, track by_src, count 5, seconds 20;
+    classtype:attempted-recon;
+    sid:200003;
+    rev:1;
+)
+
+
+###############################################################################
+# 4. HTTP Enumeration Detection
+#
+# Detect web scanning tools used from Kali
+###############################################################################
+
+alert http $EXTERNAL_NET any -> $HOME_NET any (
+    msg:"GRAYSENTINEL Kali Web Enumeration Activity";
+    http.user_agent;
+    pcre:"/(gobuster|ffuf|dirb|nikto|whatweb)/i";
+    classtype:web-application-attack;
+    sid:200004;
+    rev:1;
+)
+
+
+###############################################################################
+# 5. Large ICMP Payload Detection
+#
+# Detect possible ICMP tunneling tests
+###############################################################################
+
+alert icmp $EXTERNAL_NET any -> $HOME_NET any (
+    msg:"GRAYSENTINEL Kali ICMP Payload Transfer Attempt";
+    dsize:>100;
+    classtype:exfiltration;
+    sid:200005;
+    rev:1;
+)
+
+
+###############################################################################
+# 6. HTTP POST Data Transfer Detection
+#
+# Detect simulated HTTP exfiltration tests
+###############################################################################
+
+alert http $EXTERNAL_NET any -> $HOME_NET any (
+    msg:"GRAYSENTINEL Kali HTTP POST Data Transfer";
+    flow:to_server,established;
+    http.method;
+    content:"POST";
+    dsize:>500;
+    classtype:exfiltration;
+    sid:200006;
+    rev:1;
+)
+
+
+###############################################################################
+# 7. Nmap Version Detection Activity
+#
+# Detect service enumeration behaviour
+###############################################################################
+
+alert tcp $EXTERNAL_NET any -> $HOME_NET any (
+    msg:"GRAYSENTINEL Kali Service Enumeration Activity";
+    flags:S;
+    threshold:type both, track by_src, count 50, seconds 30;
+    classtype:network-scan;
+    sid:200007;
+    rev:1;
+)
+
+
+###############################################################################
+# 8. SSH Brute Force Detection
+#
+# Related to Hydra testing performed in lab
+###############################################################################
+
+alert tcp $EXTERNAL_NET any -> $HOME_NET 22 (
+    msg:"GRAYSENTINEL Kali SSH Brute Force Attempt";
+    flags:S;
+    threshold:type both, track by_src, count 10, seconds 60;
+    classtype:attempted-admin;
+    sid:200008;
+    rev:1;
+)
+
+
+###############################################################################
+# 9. RDP Brute Force Detection
+#
+# Related to Hydra RDP testing
+###############################################################################
+
+alert tcp $EXTERNAL_NET any -> $HOME_NET 3389 (
+    msg:"GRAYSENTINEL Kali RDP Authentication Attack Attempt";
+    flags:S;
+    threshold:type both, track by_src, count 10, seconds 60;
+    classtype:attempted-admin;
+    sid:200009;
+    rev:1;
+)
+
+
+###############################################################################
+# 10. Suspicious DNS Query Length
+#
+# Related to DNS tunneling experiments
+###############################################################################
+
+alert dns $EXTERNAL_NET any -> $HOME_NET any (
+    msg:"GRAYSENTINEL Kali Possible DNS Tunnel Activity";
+    dns.query;
+    pcre:"/[A-Za-z0-9]{40,}/";
+    classtype:exfiltration;
+    sid:200010;
+    rev:1;
+)
+
+
+###############################################################################
+# End of Kali Linux Detection Rules
+###############################################################################
