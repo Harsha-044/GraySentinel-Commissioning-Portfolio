@@ -1,1 +1,257 @@
+===============================================================================
+GraySentinel Cyber Range
+Network Topology
+===============================================================================
 
+                         INTERNET
+                              |
+                              |
+                     +----------------+
+                     | VirtualBox NAT |
+                     +----------------+
+                              |
+         ------------------------------------------------
+         |                                              |
+         |                                              |
++-----------------------+                  +-------------------------+
+|      Kali Linux       |                  |      Windows 11 VM      |
+|-----------------------|                  |-------------------------|
+| Role: SOC / Attacker  |                  | Role: Target Endpoint   |
+| Debian Linux          |                  | Windows 11              |
+|                       |                  |                         |
+| Tools Installed:      |                  | Installed Components:   |
+|                       |                  |                         |
+| • Nmap                |                  | • Sysmon               |
+| • Suricata IDS        |                  | • PowerShell Logging   |
+| • Auditd              |                  | • Windows Defender     |
+| • Rsyslog             |                  | • NXLog               |
+| • Tcpdump             |                  | • Event Viewer        |
+| • Tshark              |                  | • IIS Web Server      |
+| • Recon-ng            |                  |                         |
+| • Gobuster            |                  |                         |
+| • FFUF                |                  |                         |
+| • WhatWeb             |                  |                         |
+| • SQLMap              |                  |                         |
+| • Hydra               |                  |                         |
+| • John the Ripper     |                  |                         |
+| • Metasploit          |                  |                         |
+| • Impacket            |                  |                         |
+| • SMBClient           |                  |                         |
++-----------------------+                  +-------------------------+
+         |                                              |
+         |                                              |
+         |------------- Host-Only Network --------------|
+                     (Internal Lab Network)
+                         192.168.56.0/24
+
+
+===============================================================================
+Communication Paths
+===============================================================================
+
+Kali  ---------------- ICMP ------------------> Windows
+Kali  ---------------- SMB -------------------> Windows
+Kali  ---------------- RDP -------------------> Windows
+Kali  ---------------- HTTP ------------------> IIS Server
+Kali  ---------------- DNS -------------------> DNS Queries
+Kali  ---------------- SSH -------------------> Linux Targets
+Windows ------------ Syslog (UDP 514) -------> Kali Rsyslog
+Windows ------------ Event Logs -------------> NXLog
+NXLog -------------- Forward Logs -----------> Kali
+Suricata ----------- Monitor Traffic --------> Host-Only Interface
+Tcpdump ------------ Capture Packets --------> PCAP Files
+
+
+===============================================================================
+Monitoring Components
+===============================================================================
+
++-------------------------+
+|      Suricata IDS       |
++-------------------------+
+        |
+        +-- local.rules
+        +-- graysentinel.rules
+        +-- evasion.rules
+        |
+        +-- fast.log
+        +-- eve.json
+        +-- stats.log
+
+
++-------------------------+
+|        Auditd           |
++-------------------------+
+        |
+        +-- /etc/passwd
+        +-- /etc/shadow
+        +-- /etc/sudoers
+        +-- /etc/crontab
+        +-- SSH Configuration
+        +-- File Integrity Monitoring
+
+
++-------------------------+
+|       Windows Sysmon    |
++-------------------------+
+        |
+        +-- Process Creation
+        +-- Network Connections
+        +-- Registry Changes
+        +-- File Creation
+        +-- PowerShell Execution
+
+
+===============================================================================
+Reconnaissance
+===============================================================================
+
+Passive Recon
+-------------
+• theHarvester
+• Recon-ng
+• WHOIS
+• DNS Enumeration
+
+Active Recon
+------------
+• Nmap
+• Banner Grabbing
+• Service Enumeration
+• Version Detection
+• OS Detection
+
+Web Enumeration
+---------------
+• Gobuster
+• Dirb
+• FFUF
+• WhatWeb
+• Wappalyzer
+
+
+===============================================================================
+Attack Simulation
+===============================================================================
+
+Credential Attacks
+------------------
+• Hydra
+• John the Ripper
+
+SMB Enumeration
+---------------
+• smbclient
+
+Vulnerability Assessment
+------------------------
+• Nmap NSE
+• MS17-010 Verification
+
+Exploitation
+------------
+• Metasploit Framework
+
+Privilege Escalation
+--------------------
+• PowerUp
+• Linux Enumeration
+
+Persistence
+-----------
+• Cron Jobs
+• SSH Authorized Keys
+
+Lateral Movement
+----------------
+• PsExec (Impacket)
+• SMB Authentication
+
+Data Exfiltration
+-----------------
+• HTTP
+• ICMP
+• DNS (Lab Simulation)
+
+
+===============================================================================
+Detection & Defense
+===============================================================================
+
+Network Monitoring
+------------------
+• Suricata IDS
+• Custom Detection Rules
+• Packet Capture
+• PCAP Analysis
+
+Endpoint Monitoring
+-------------------
+• Sysmon
+• Windows Event Logs
+• PowerShell Logging
+
+Linux Monitoring
+----------------
+• Auditd
+• AIDE
+• Rsyslog
+
+Threat Hunting
+--------------
+• Process Tree Analysis
+• Registry Hunting
+• Persistence Hunting
+• Network Hunting
+• Scheduled Task Analysis
+• WMI Investigation
+
+
+===============================================================================
+Collected Evidence
+===============================================================================
+
+• PCAP Files
+• Windows Event Logs
+• Sysmon Logs
+• Audit Logs
+• Suricata Alerts
+• Threat Hunting Reports
+• Recon Reports
+• IOC Documentation
+• Detection Rules
+• Sigma Rules
+• Suricata Rules
+• Incident Reports
+
+
+===============================================================================
+Overall Lab Architecture
+===============================================================================
+
+                   Internet
+                       |
+               VirtualBox NAT
+                       |
+    ------------------------------------------------
+    |                                              |
+    |                                              |
+ Kali Linux (SOC/Attacker)              Windows 11 (Victim)
+    |                                              |
+    |-------------- Host-Only Network -------------|
+                       |
+         +-------------------------------+
+         |       Monitoring Stack        |
+         |-------------------------------|
+         | Suricata IDS                  |
+         | Auditd                        |
+         | Sysmon                        |
+         | Rsyslog                       |
+         | NXLog                         |
+         | Packet Capture                |
+         | Threat Hunting                |
+         +-------------------------------+
+
+===============================================================================
+End of Network Map
+===============================================================================
