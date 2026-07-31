@@ -1,1 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
 
+<Sysmon schemaversion="4.90">
+
+    <!--
+    ============================================================================
+    GraySentinel Custom Sysmon Configuration
+
+    Author  : Harsha
+    Version : 1.0
+
+    Purpose:
+    Endpoint visibility and threat hunting configuration
+
+    Environment:
+    Windows 11 Lab Endpoint
+
+    Monitoring:
+    - Process Creation
+    - PowerShell Activity
+    - Command Execution
+    - WMIC Usage
+    - Network Connections
+    - Registry Changes
+    - File Creation
+
+    ============================================================================
+    -->
+
+
+    <!--
+    Event ID 1
+    Process Creation
+
+    Used for:
+    - Malware analysis
+    - Process tree investigation
+    - Threat hunting
+    -->
+
+    <EventFiltering>
+
+        <ProcessCreate onmatch="include">
+
+            <!-- PowerShell Execution -->
+            <Image condition="end with">
+                powershell.exe
+            </Image>
+
+            <!-- Command Prompt -->
+            <Image condition="end with">
+                cmd.exe
+            </Image>
+
+            <!-- Windows Management Instrumentation -->
+            <Image condition="end with">
+                wmiprvse.exe
+            </Image>
+
+            <!-- Common Scripting Engine -->
+            <Image condition="end with">
+                wscript.exe
+            </Image>
+
+            <Image condition="end with">
+                cscript.exe
+            </Image>
+
+        </ProcessCreate>
+
+
+        <!--
+        Event ID 3
+        Network Connections
+
+        Used for:
+        - C2 detection
+        - Suspicious connections
+        - Threat hunting
+        -->
+
+        <NetworkConnect onmatch="include">
+
+            <DestinationPort condition="is">
+                80
+            </DestinationPort>
+
+            <DestinationPort condition="is">
+                443
+            </DestinationPort>
+
+            <DestinationPort condition="is">
+                445
+            </DestinationPort>
+
+            <DestinationPort condition="is">
+                3389
+            </DestinationPort>
+
+        </NetworkConnect>
+
+
+        <!--
+        Event ID 11
+        File Creation
+
+        Used for:
+        - Malware drop detection
+        - Payload analysis
+        -->
+
+        <FileCreate onmatch="include">
+
+            <TargetFilename condition="contains">
+                Downloads
+            </TargetFilename>
+
+            <TargetFilename condition="contains">
+                Temp
+            </TargetFilename>
+
+            <TargetFilename condition="contains">
+                AppData
+            </TargetFilename>
+
+        </FileCreate>
+
+
+
+        <!--
+        Event ID 12/13/14
+        Registry Monitoring
+
+        Used for:
+        - Persistence detection
+        - Configuration changes
+        -->
+
+        <RegistryEvent onmatch="include">
+
+            <TargetObject condition="contains">
+                \Run
+            </TargetObject>
+
+            <TargetObject condition="contains">
+                \RunOnce
+            </TargetObject>
+
+            <TargetObject condition="contains">
+                Services
+            </TargetObject>
+
+        </RegistryEvent>
+
+
+
+        <!--
+        Event ID 22
+        DNS Query Monitoring
+
+        Used for:
+        - Suspicious DNS activity
+        - Threat hunting
+        -->
+
+        <DnsQuery onmatch="include">
+
+            <QueryName condition="contains">
+                .exe
+            </QueryName>
+
+            <QueryName condition="contains">
+                .xyz
+            </QueryName>
+
+        </DnsQuery>
+
+
+    </EventFiltering>
+
+
+</Sysmon>
