@@ -1,1 +1,35 @@
+# graysentinel.rules
 
+Custom Suricata IDS rules developed during GraySentinel Cyber Range training.
+
+## Detections Covered
+
+- ICMP reconnaissance
+- ICMP data transfer attempts
+- Nmap SYN scans
+- Port scanning
+- SMB enumeration
+- Web directory brute forcing
+- HTTP data exfiltration
+- Executable downloads
+- PowerShell activity
+- DNS tunneling indicators
+- SMB exploitation attempts
+- SSH brute force
+- RDP brute force
+- IP fragmentation
+- Web scanning tools
+
+## Logs Generated
+
+Suricata outputs:
+
+- fast.log
+- eve.json
+- stats.log
+
+## Purpose
+
+These rules were created for defensive monitoring,
+IDS tuning, threat hunting, and incident response practice
+inside the GraySentinel cybersecurity laboratory.
