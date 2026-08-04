@@ -1,1 +1,331 @@
+# EXPLOITATION GUIDE: EternalBlue (MS17-010)
 
+## 1. Overview
+
+**Vulnerability Name:** EternalBlue
+**Vulnerability ID:** MS17-010
+**Affected Service:** Microsoft SMBv1
+**Protocol:** SMB (TCP Port 445)
+
+## Description
+
+EternalBlue is a critical vulnerability affecting older unpatched Windows systems. It exists in the SMBv1 protocol implementation and can allow remote code execution when successfully exploited.
+
+The vulnerability became widely known after being used in the WannaCry ransomware attacks.
+
+---
+
+# 2. Assessment Target
+
+**Target System:**
+Windows Virtual Machine
+
+**Target IP:**
+192.168.56.104
+
+**Testing Machine:**
+Kali Linux
+
+**Testing Environment:**
+Isolated VirtualBox Host-Only Network
+
+---
+
+# 3. Prerequisites for Exploitation
+
+For EternalBlue exploitation to be possible, the following conditions must exist:
+
+## 1. SMB Service Available
+
+The target must have:
+
+* TCP port 445 open
+* SMB service running
+
+SMB is used by Windows for:
+
+* File sharing
+* Network communication
+
+---
+
+## 2. Vulnerable Windows Version
+
+Common affected systems include:
+
+* Windows 7 (unpatched)
+* Windows Server 2008 R2 (unpatched)
+
+---
+
+## 3. Missing Security Patch
+
+The system must not have the Microsoft security update that fixes MS17-010.
+
+---
+
+## 4. Network Access
+
+The testing machine must be able to communicate with the target system.
+
+---
+
+# 4. Vulnerability Verification
+
+## Tool Used
+
+Nmap
+
+## Purpose
+
+To check whether the target is affected by MS17-010.
+
+## Result
+
+The target was scanned using the SMB vulnerability detection script.
+
+Finding:
+
+```
+Host does NOT appear vulnerable.
+```
+
+The target system was not confirmed vulnerable to EternalBlue.
+
+---
+
+# 5. Exploitation Workflow (Hypothetical Vulnerable System)
+
+The exploitation process consists of:
+
+1. Loading the Metasploit Framework
+2. Selecting the EternalBlue module
+3. Configuring the target information
+4. Selecting a compatible payload
+5. Performing the security test
+6. Evaluating the result
+
+---
+
+# 6. Metasploit Module Information
+
+Module:
+
+```
+exploit/windows/smb/ms17_010_eternalblue
+```
+
+Module breakdown:
+
+```
+exploit
+ |
+ +-- windows
+       |
+       +-- smb
+              |
+              +-- ms17_010_eternalblue
+```
+
+Meaning:
+
+* exploit → vulnerability testing module
+* windows → Windows target
+* smb → SMB service
+* ms17_010 → Microsoft vulnerability identifier
+
+---
+
+# 7. Payload Concept
+
+Payload:
+
+```
+windows/x64/meterpreter/reverse_tcp
+```
+
+Explanation:
+
+## Windows
+
+Designed for Windows systems.
+
+## x64
+
+Designed for 64-bit architecture.
+
+## Meterpreter
+
+Metasploit's advanced testing session environment.
+
+## Reverse TCP
+
+Communication method where the tested system connects back to the testing system.
+
+---
+
+# 8. Post-Exploitation Assessment
+
+If a successful authorized test created a session, the tester would collect information such as:
+
+## User Context
+
+Purpose:
+
+Determine the privilege level obtained.
+
+Example information:
+
+* Current user
+* Administrator privileges
+* SYSTEM privileges
+
+---
+
+## System Information
+
+Collected information:
+
+* Operating system version
+* Computer name
+* Architecture
+
+---
+
+## Network Information
+
+Collected information:
+
+* IP configuration
+* Network interfaces
+
+---
+
+## Process Information
+
+Collected information:
+
+* Running applications
+* Active services
+
+---
+
+## Credential Security Assessment
+
+Purpose:
+
+Evaluate password security and identify weak credential practices.
+
+---
+
+# 9. Impact Assessment
+
+If successful, EternalBlue could allow:
+
+* Remote code execution
+* Unauthorized system access
+* Privilege escalation
+* Data compromise
+* Malware deployment
+
+Severity:
+
+**Critical**
+
+---
+
+# 10. Detection Methods
+
+Defenders can detect exploitation attempts through:
+
+## Network Monitoring
+
+Monitor:
+
+* SMB traffic
+* Suspicious connections to TCP 445
+
+## Endpoint Monitoring
+
+Monitor:
+
+* Unusual processes
+* Unexpected executable files
+* Privilege changes
+
+## Security Logs
+
+Review:
+
+* Windows Event Logs
+* Authentication activity
+* Network events
+
+---
+
+# 11. Mitigation Recommendations
+
+## Apply Security Updates
+
+Install Microsoft security patches that fix MS17-010.
+
+---
+
+## Disable SMBv1
+
+SMBv1 is outdated and should be disabled where possible.
+
+---
+
+## Firewall Restrictions
+
+Limit SMB access:
+
+* Allow only trusted systems
+* Block unnecessary external access
+
+---
+
+## Network Segmentation
+
+Separate critical systems to reduce attack impact.
+
+---
+
+## Strong Authentication
+
+Use:
+
+* Strong passwords
+* Multi-factor authentication
+* Account monitoring
+
+---
+
+# 12. Final Assessment Result
+
+The EternalBlue vulnerability assessment was performed against the Windows VM.
+
+Result:
+
+```
+Target was not vulnerable to MS17-010.
+No exploitation session was created.
+```
+
+The system appears protected against EternalBlue due to patching, configuration changes, or absence of vulnerable SMB components.
+
+---
+
+# Conclusion
+
+This exercise demonstrated the vulnerability assessment lifecycle:
+
+1. Identify vulnerability
+2. Verify exposure
+3. Understand exploitation requirements
+4. Assess potential impact
+5. Document findings
+6. Recommend security improvements
+
+Understanding exploitation techniques helps security professionals improve detection, prevention, and incident response.
